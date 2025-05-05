@@ -1,0 +1,36 @@
+index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Piper Web TTS</title>
+</head>
+<body>
+  <h1>Piper Web Text to Speech</h1>
+  <textarea id="text" rows="4" cols="50" placeholder="Enter text here"></textarea><br>
+  <label for="model">Select Model:</label>
+  <select id="model">
+    <option value="nepali">Nepali</option>
+    <option value="english">English</option>
+  </select><br><br>
+  <button onclick="speakText()">Speak</button>
+
+  <script>
+    async function speakText() {
+      const text = document.getElementById("text").value;
+      const model = document.getElementById("model").value;
+
+      const response = await fetch("http://localhost:5000/speak", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text, model })
+      });
+
+      const result = await response.json();
+      alert(result.status || result.error);
+    }
+  </script>
+</body>
+</html>
+
+
