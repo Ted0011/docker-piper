@@ -3,6 +3,7 @@ from flask_cors import CORS
 import subprocess
 import os
 import socket
+import time
 
 app = Flask(__name__, static_folder='.')
 CORS(app)
@@ -25,6 +26,8 @@ def speak():
         return jsonify({"error": "Invalid model"}), 400
 
     try:
+        subprocess.run("pkill -f 'aplay -r 22050' || true", shell=True)
+        time.sleep(1)
         cmd = f"echo '{text}' | {PIPER_PATH} --model {model_path} --output-raw | aplay -r 22050 -f S16_LE -t raw -"
         subprocess.run(cmd, shell=True, check=True)
         return jsonify({"status": "success"})

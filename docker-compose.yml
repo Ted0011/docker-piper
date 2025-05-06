@@ -12,4 +12,9 @@ services:
       - PIPER_PATH=/app/piper/piper/piper
     volumes:
       - ./piper:/app/piper
-      - .:/app  # Mount current directory for code changes
+      - .:/app
+    networks:
+      - piper-network
+networks:
+  piper-network:
+    external: true
