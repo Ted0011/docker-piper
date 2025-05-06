@@ -1,11 +1,13 @@
-index.html
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Piper Web TTS</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #008080; /* Teal-blue background */
+      background-color: #008080;
       color: white;
       text-align: center;
       padding: 20px;
@@ -16,79 +18,86 @@ index.html
       align-items: center;
       justify-content: center;
     }
-
     .container {
       background-color: rgba(255, 255, 255, 0.1);
-      padding: 30px;
+      padding: 20px;
       border-radius: 10px;
-      max-width: 500px;
       width: 90%;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      max-width: 500px;
     }
-
-    h1 {
-      margin-bottom: 20px;
-      color: white;
-    }
-
     textarea {
-      width: 80%;
+      width: 100%;
       padding: 10px;
+      margin: 10px 0;
       border-radius: 5px;
-      border: 1px solid #ccc;
-      margin-bottom: 15px;
     }
-
-    select {
-      padding: 8px;
-      border-radius: 5px;
-      margin-bottom: 20px;
-    }
-
     button {
-      background-color: #FF6B6B; /* Coral button color */
+      background-color: #FF6B6B;
       color: white;
       border: none;
-      padding: 12px 25px;
-      font-size: 16px;
+      padding: 12px 20px;
       border-radius: 5px;
+      font-size: 16px;
       cursor: pointer;
-      transition: background-color 0.3s;
-    }
-
-    button:hover {
-      background-color: #FF5252; /* Darker coral on hover */
     }
   </style>
-  <meta charset="UTF-8" />
-  <title>Piper Web TTS</title>
 </head>
 <body>
-  <h1>Piper Web Text to Speech</h1>
-  <textarea id="text" rows="4" cols="50" placeholder="Enter text here"></textarea><br>
-  <label for="model">Select Model:</label>
-  <select id="model">
-    <option value="nepali">Nepali</option>
-    <option value="english">English</option>
-  </select><br><br>
-  <button onclick="speakText()">Speak</button>
-
+  <div class="container">
+    <h1>Piper Web TTS</h1>
+    <textarea id="text" rows="4" placeholder="Enter text here"></textarea><br>
+    <label for="model">Select Model:</label>
+    <select id="model">
+      <option value="nepali">Nepali</option>
+      <option value="english">English</option>
+    </select><br><br>
+    <button id="speakBtn">Speak</button>
+  </div>
   <script>
-    async function speakText() {
-      const text = document.getElementById("text").value;
-      const model = document.getElementById("model").value;
+  let serverIP = null;
 
-      const response = await fetch("http://localhost:5000/speak", {
+  // Function to get server IP
+  async function getServerIP() {
+    try {
+      // First try to get IP from the backend
+      const response = await fetch('/get_server_ip');
+      const data = await response.json();
+      return data.ip;
+    } catch (error) {
+      console.error("Error getting server IP:", error);
+      // Fallback to current host if /get_server_ip fails
+      return window.location.hostname;
+    }
+  }
+
+  // Main speak function
+  async function speakText() {
+    if (!serverIP) {
+      serverIP = await getServerIP();
+    }
+
+    const text = document.getElementById("text").value;
+    const model = document.getElementById("model").value;
+
+    try {
+      const response = await fetch(`http://${serverIP}:5000/speak`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text, model })
       });
 
       const result = await response.json();
-      alert(result.status || result.error);
+      alert(result.status || "Audio played successfully");
+    } catch (error) {
+      alert("Error: " + error.message);
     }
-  </script>
+  }
+
+  // Initialize when page loads
+  document.addEventListener('DOMContentLoaded', async () => {
+    serverIP = await getServerIP();
+    document.getElementById('speakBtn').addEventListener('click', speakText);
+  });
+</script>
 </body>
 </html>
-
-
