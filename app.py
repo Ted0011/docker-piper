@@ -1,7 +1,8 @@
-from flask import Flask, request, jsonify, send_from_directory  # Added send_from_directory
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import subprocess
 import os
+import socket
 
 app = Flask(__name__, static_folder='.')  # Added static_folder
 CORS(app)
@@ -38,6 +39,22 @@ def serve_index():
 @app.route('/<path:path>')
 def serve_static(path):
     return send_from_directory('.', path)
+
+def get_lan_ip():
+    """Get the LAN IP address of the server"""
+    try:
+        #CREATE A DUMMY SOCKET TO GET THE IP
+        s = socker.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+        s.close()
+        return ip
+    except:
+        return request.host.split(':')[0]
+
+@app.route('/get_server_ip')
+def get_server_ip():
+    return jsonify({"ip": get_lan_ip()})
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000, debug=True)  # Changed to port 8080 for consistency

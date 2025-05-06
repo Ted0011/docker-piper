@@ -4,12 +4,19 @@ services:
   piper-tts:
     build: .
     ports:
-      - "8080:8080"
-      - "5000:5000"
+      - "0.0.0.0:8080:8080"
+      - "0.0.0.0:5000:5000"
     devices:
       - "/dev/snd:/dev/snd"
     environment:
       - PIPER_PATH=/app/piper/piper/piper
+      - AUDIODRIVER=alsa
     volumes:
       - ./piper:/app/piper
-      - .:/app  # Mount current directory for code changes
+      - .:/app
+    networks:
+      - piper-network
+    privileged: true
+networks:
+  piper-network:
+    external: true

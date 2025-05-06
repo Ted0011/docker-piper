@@ -53,51 +53,29 @@
     </select><br><br>
     <button id="speakBtn">Speak</button>
   </div>
+
   <script>
-  let serverIP = null;
-
-  // Function to get server IP
-  async function getServerIP() {
-    try {
-      // First try to get IP from the backend
-      const response = await fetch('/get_server_ip');
-      const data = await response.json();
-      return data.ip;
-    } catch (error) {
-      console.error("Error getting server IP:", error);
-      // Fallback to current host if /get_server_ip fails
-      return window.location.hostname;
-    }
-  }
-
-  // Main speak function
-  async function speakText() {
-    if (!serverIP) {
-      serverIP = await getServerIP();
-    }
-
-    const text = document.getElementById("text").value;
-    const model = document.getElementById("model").value;
-
-    try {
-      const response = await fetch(`http://${serverIP}:5000/speak`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text, model })
-      });
-
-      const result = await response.json();
-      alert(result.status || "Audio played successfully");
-    } catch (error) {
-      alert("Error: " + error.message);
-    }
-  }
-
-  // Initialize when page loads
-  document.addEventListener('DOMContentLoaded', async () => {
-    serverIP = await getServerIP();
-    document.getElementById('speakBtn').addEventListener('click', speakText);
-  });
-</script>
+    document.getElementById('speakBtn').addEventListener('click', async function() {
+      const text = document.getElementById("text").value;
+      const model = document.getElementById("model").value;
+      
+      try {
+        // Use your laptop's LAN IP address here
+        const response = await fetch("http://192.168.88.24:5000/speak", {
+          method: "POST",
+          headers: { 
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          },
+          body: JSON.stringify({ text, model })
+        });
+        
+        const result = await response.json();
+        alert(result.status || "Audio played successfully");
+      } catch (error) {
+        alert("Error: " + error.message);
+      }
+    });
+  </script>
 </body>
 </html>
