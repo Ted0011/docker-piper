@@ -32,7 +32,7 @@ A Dockerized web interface for Piper TTS (Text-to-Speech) with support for multi
 
 ## The web interface will be available at: http://your_dynamic_IP:8080 
 
-Note: Even your phone can browse the and give your laptop VOICE
+Note: Even your phone can browse the web application and give your laptop VOICE
 
 ## Now your computer makes noise of what you say....
 
